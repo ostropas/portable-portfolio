@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 
+const resolvePublicAssetPath = (path) => {
+  if (/^https?:\/\//.test(path)) return path;
+  const normalized = path.replace(/^(\.\.\/|\.\/|\/)+/, "");
+  return `${process.env.PUBLIC_URL}/${normalized}`;
+};
+
 const parseProjects = (mdContent) => {
   const projects = [];
   const lines = mdContent.split("\n");
@@ -11,7 +17,7 @@ const parseProjects = (mdContent) => {
       const name = line.substr(3).trim();
       const description = lines[++i].trim();
       const imageLine = lines[++i];
-      const image = imageLine.match(/!\[(.*)\]\((.*)\)/)[2];
+      const image = resolvePublicAssetPath(imageLine.match(/!\[(.*)\]\((.*)\)/)[2]);
       const tags = lines[++i].split(":")[1].trim();
       const badges = [];
       const buttons = [];
